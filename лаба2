@@ -1,0 +1,220 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FuncAnimation
+
+# Задание 1
+
+df_email = pd.read_csv('email.csv')
+df_username = pd.read_csv('username.csv')
+grouped_email = df_email.groupby('Trip count')['Total price'].mean()
+print(grouped_email)
+df_email = df_email.fillna(value=0)
+# df_email = df_email.to_string()
+print(df_email)
+
+df_username = df_username.fillna(value=0)
+print(df_username)
+
+merged_data = pd.merge(df_username, df_email, on=['Identifier', 'First name', 'Last name', 'Trip count',
+                                                  'Phone number'])
+merged_data = merged_data.to_string() 
+print(merged_data)
+
+# Задание 2. Преобразование данных (pivot):
+# a)
+
+df_sales = pd.read_csv('sales.csv')
+pivot_table = pd.pivot_table(df_sales, index=['Rep', 'Manager', 'Product'], values=['Price', 'Quantity'],
+                             aggfunc="sum", fill_value=0)
+
+pivot_table = pivot_table.sort_index()
+print(pivot_table)
+
+# b)
+
+df_data = pd.read_csv('data.csv')
+pivot_table = pd.pivot_table(df_data, index='Date', columns='Product', values='Sales', aggfunc="sum", fill_value=0)
+print(pivot_table)
+
+# Задание 3. Визуализация данных
+
+# a)
+
+df_cars = pd.read_csv('cars.csv')
+df_cars = df_cars.head(50)
+
+df_cars.plot(kind='line', x='Horsepower', y='Acceleration', color='g')
+plt.xlabel('Мощность')
+plt.ylabel('Ускорение')
+plt.title('Зависимость ускорения от мощности')
+
+plt.legend().remove()
+plt.grid(True)
+plt.show()
+
+# b) Создание визуализации распределения набора данных
+
+df_cars = pd.read_csv('cars.csv')
+df_cars = df_cars.head(100)
+
+plt.hist(df_cars['Horsepower'])
+plt.xlabel('Мощность')
+plt.ylabel('Частота')
+plt.title('Распределение автомобилей по мощности')
+plt.grid(True)
+plt.show()
+
+# c) Сравнение нескольких наборов данных на одном графике
+
+df_cars = pd.read_csv('cars.csv')
+df_cars = df_cars.head(25)
+
+plt.plot(df_cars['Horsepower'], df_cars['Acceleration'], 'b')
+plt.plot(df_cars['Displacement'], df_cars['Acceleration'], 'r')
+
+plt.title('Зависимость ускорения от мощности и расхода топлива автомобиля')
+plt.xlabel('Мощность или Объем двигателя')
+plt.ylabel('Ускорение')
+plt.legend(['Horsepower vs. Acceleration', 'Displacement vs. Acceleration'])
+plt.grid(True)
+plt.show()
+
+# d) Построение математической функции. Создать данные для x и y (где x это numpy.linspace,
+# а y - заданная в условии варианта математическая функция). Добавить легенду и название графика.
+# Вариант 1, функция sin
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.legend(['sin(x)'])
+plt.title('График функции sin(x)')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.grid(True)
+plt.show()
+
+# Вариант 2, функция cos
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.cos(x)
+
+plt.plot(x, y)
+plt.legend(['cos(x)'])
+plt.title('График функции cos(x)')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.grid(True)
+plt.show()
+
+# e) Моделирование простой анимации
+
+x = np.linspace(0, 2 * np.pi, 100)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+fig, ax = plt.subplots()
+
+line_sin, = ax.plot(x, y_sin, color='b')
+line_cos, = ax.plot(x, y_cos, color='red')
+plt.legend(['sin(x)', 'cos(x)'])
+
+
+def animate(i):
+    line_sin.set_ydata(np.sin(x + i / 10))
+    line_cos.set_ydata(np.cos(x + i / 10))
+    return line_sin, line_cos
+
+
+ani = FuncAnimation(fig, animate, frames=100, interval=50, blit=True)
+plt.show()
+
+# Задание 4. Загрузка CSV-файла в DataFrame
+
+df = pd.read_csv('Climate.csv')
+df = df.head(5)
+df = df.to_string()
+print(df)
+
+# Задание 5. Выбор столбцов из DataFrame.
+# a)
+
+df_sales = pd.read_csv('sales.csv')
+
+df_presented = df_sales[df_sales['Status'] == 'presented']
+df_result = df_presented.sort_values('Price')
+df_result = df_result.to_string()
+print(df_result)
+
+# b)
+
+df_climate = pd.read_csv('climate.csv')
+
+df_filtered = df_climate[(df_climate['cri_score'] > 100) & (df_climate['fatalities_total'] <= 10)]
+result = df_filtered[['rw_country_name', 'rw_country_code']]
+result = result.to_string()
+print(result)
+
+# c)
+
+data = pd.read_csv('cars.csv')
+
+filtered_data = data[(data['MPG'] >= 25) & (data['Displacement'] / data['Cylinders'] <= 40)]
+final_cars = filtered_data['Car'].sort_values()
+final_cars.head(50)
+for car in final_cars:
+    print(car)
+
+# Задание 6. Вычисление статистики для массива numpy
+
+data = np.genfromtxt('data.csv', delimiter=',', names=True)
+
+mean_data = np.mean(data['Sales'])
+std_data = np.std(data['Sales'])
+max_data = np.max(data['Sales'])
+
+print("Среднее значение по dats.csv:", mean_data)
+print("Стандартное отклонение по dats.csv:", std_data)
+print("Максимальное значение по dats.csv:", max_data)
+
+sales = np.genfromtxt('sales.csv', delimiter=',', names=True)
+
+mean_sales = np.mean(sales['Price'])
+std_sales = np.std(sales['Price'])
+max_sales = np.max(sales['Price'])
+
+print("Среднее значение по sales.csv:", mean_sales)
+print("Стандартное отклонение по sales.csv:", std_sales)
+print("Максимальное значение по sales.csv:", max_sales)
+
+# Задание 7. Операции с матрицами
+
+matrix_a = np.array([[1, 2, 3],
+                     [4, 5, 6],
+                     [7, 8, 9]])
+
+matrix_b = np.array([[10, 11, 12],
+                     [13, 14, 15],
+                     [16, 17, 18]])
+
+
+matrix_sum = matrix_a + matrix_b
+matrix_diff = matrix_a - matrix_b
+matrix_dot = np.dot(matrix_a, matrix_b)
+matrix_a_transpose = np.transpose(matrix_a)
+matrix_b_transpose = np.transpose(matrix_b)
+
+print("Матрица A:")
+print(matrix_a)
+print("Матрица B:")
+print(matrix_b)
+print("Сумма матриц A и B:")
+print(matrix_sum)
+print("Разность матриц A и B:")
+print(matrix_diff)
+print("Произведение матриц A и B:")
+print(matrix_dot)
+print("Транспонированная матрица A:")
+print(matrix_a_transpose)
+print("Транспонированная матрица B:")
+print(matrix_b_transpose)
